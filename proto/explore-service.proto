@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+package explore;
+
+
+service ExploreService {
+  rpc ListLikedYou(ListLikedYouRequest) returns (ListLikedYouResponse);
+
+  // ListNewLikedYou returns all actors who have liked the recipient
+  // except those who have been liked in return.  This allows a
+  // recipient to see only new admirers they haven't reciprocated.
+  rpc ListNewLikedYou(ListLikedYouRequest) returns (ListLikedYouResponse);
+
+  // CountLikedYou returns the total number of actors who have liked
+  // the recipient. 
+  rpc CountLikedYou(CountLikedYouRequest) returns (CountLikedYouResponse);
+
+  // PutDecision records the actor's decision (like or pass) of another
+  // user.  If a decision already exists for this actor/recipient
+  // combination it should be overwritten.  The response includes a
+  // boolean indicating whether the like is mutual.
+  rpc PutDecision(PutDecisionRequest) returns (PutDecisionResponse);
+}
+
+// The recipient_user_id is the
+// identifier of the user whose admirers are being listed.
+message ListLikedYouRequest {
+  string recipient_user_id = 1;
+  optional string pagination_token = 2;
+}
+
+// Response message for the list RPCs.  Each liker contains the
+// identifier of the actor and a unix timestamp indicating when the
+// decision was last updated.  If there are more results the
+// next_pagination_token will be set.
+message ListLikedYouResponse {
+  message Liker {
+    string actor_id = 1;
+    uint64 unix_timestamp = 2;
+  }
+  repeated Liker likers = 1;
+  optional string next_pagination_token = 2;
+}
+
+// Request message for the count RPC.  Only the recipient's id is
+// required.
+message CountLikedYouRequest {
+  string recipient_user_id = 1;
+}
+
+// Response message containing the count of likers.
+message CountLikedYouResponse {
+  uint64 count = 1;
+}
+
+// Request message for recording a decision.  actor_user_id is the id
+// of the user making the decision and recipient_user_id is the id of
+// the user receiving it.  liked_recipient should be true when
+// liking and false when passing.
+message PutDecisionRequest {
+  string actor_user_id = 1;
+  string recipient_user_id = 2;
+  bool liked_recipient = 3;
+}
+
+// Response message for PutDecision.  mutual_likes will be set to true
+// if both actor and recipient have liked each other at the time of
+// recording the decision.
+message PutDecisionResponse {
+  bool mutual_likes = 1;
+}
