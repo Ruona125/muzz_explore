@@ -24,6 +24,8 @@ services:
         condition: service_healthy
     env_file:
       - .env
+    environment:
+      - DATABASE_URL=postgres://postgres:root@db:5432/explore?sslmode=disable
     ports:
       - "50051:50051"
 

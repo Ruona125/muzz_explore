@@ -18,6 +18,7 @@ RUN adduser -D explore
 WORKDIR /home/explore
 
 COPY --from=builder /app/explore-service .
+COPY .env .env
 
 USER explore
 
