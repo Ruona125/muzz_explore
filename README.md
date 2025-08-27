@@ -115,9 +115,4 @@ Yes, the `.env` file is in the repo and the database credentials are visible. Th
 * Want to run in a container only? Stick to compose.
 * Want to plug in a different Postgres? Point `DATABASE_URL` (or the discrete vars) at it.
 
-## Contributing
 
-* Fork, branch, commit with clear messages, open a PR.
-* Keep changes small and tested (`go test -run TestExplorerServer -v ./test`).
-
-If you want, I can tailor this to your exact `.proto` package/method names and the actual env var keys you’re using—just paste those in and I’ll wire them into the README.
