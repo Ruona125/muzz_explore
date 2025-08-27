@@ -4,11 +4,11 @@ services:
   db:
     image: postgres:15
     environment:
-      POSTGRES_DB: postgres
+      POSTGRES_DB: explore
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: root
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -22,9 +22,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    environment:
-      DATABASE_URL: postgres://postgres:postgres@db:5432/postgres?sslmode=disable
-      PORT: 50051
+    env_file:
+      - .env
     ports:
       - "50051:50051"
 

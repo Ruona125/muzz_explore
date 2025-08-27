@@ -1,8 +1,9 @@
-FROM golang:1.21 AS builder
+FROM golang:1.23 AS builder
 
 WORKDIR /app
 
 COPY go.mod ./
+COPY go.sum ./
 COPY proto ./proto
 COPY internal ./internal
 COPY cmd ./cmd

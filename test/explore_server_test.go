@@ -2,6 +2,7 @@ package test
 
 import (
 	"context"
+	"os"
 	"testing"
 
 	"explore_service/internal/server"
@@ -16,6 +17,22 @@ import (
 // startPostgres spins up a temporary PostgreSQL container for testing.
 func startPostgres(ctx context.Context, t *testing.T) (*pgxpool.Pool, func()) {
 	t.Helper()
+	// If TEST_PG_DSN is set, use that external database instead of starting
+	// a testcontainer. This makes it easy to point tests at a local
+	// docker-compose Postgres for debugging.
+	if dsn := os.Getenv("TEST_PG_DSN"); dsn != "" {
+		pool, err := pgxpool.New(ctx, dsn)
+		if err != nil {
+			t.Fatalf("failed to create pgx pool from TEST_PG_DSN: %v", err)
+		}
+		if err := pool.Ping(ctx); err != nil {
+			pool.Close()
+			t.Fatalf("failed to ping external Postgres from TEST_PG_DSN: %v", err)
+		}
+		cleanup := func() { pool.Close() }
+		return pool, cleanup
+	}
+
 	// Create a new Postgres container with default credentials.
 	container, err := tcpostgres.RunContainer(ctx, testcontainers.WithImage("postgres:15"))
 	if err != nil {
