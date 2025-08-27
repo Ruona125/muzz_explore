@@ -15,6 +15,7 @@ import (
 	explorepb "explore_service/proto"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/joho/godotenv"
 )
 
 // getEnv fetches an environment variable or returns the fallback if unset.
@@ -27,6 +28,10 @@ func getEnv(key, fallback string) string {
 
 func main() {
 	ctx := context.Background()
+	// Load environment variables from .env if present (local development convenience)
+	if err := godotenv.Load(); err != nil {
+		log.Println("No .env file found; continuing with existing environment variables")
+	}
 	dsn := os.Getenv("DATABASE_URL")
 	if dsn == "" {
 		log.Fatal("environment variable DATABASE_URL must be set to a PostgreSQL DSN")
